@@ -228,7 +228,7 @@ export default function FileUpload() {
                 />
                 <span className="text-muted-foreground text-center col-span-4 sm:col-span-2">
                   {partialQuestions
-                    ? `Generating question ${partialQuestions.length + 1} of 4`
+                    ? `Generating question ${partialQuestions.length} of 4`
                     : "Analyzing PDF content"}
                 </span>
               </div>
