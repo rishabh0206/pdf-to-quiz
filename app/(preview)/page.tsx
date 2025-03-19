@@ -1,29 +1,26 @@
 "use client";
 
-import { useState } from "react";
-import { experimental_useObject } from "ai/react";
-import { questionsSchema } from "@/lib/schemas";
-import { z } from "zod";
-import { toast } from "sonner";
-import { FileUp, Plus, Loader2 } from "lucide-react";
+import Quiz from "@/app/(preview)/quiz/quiz";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import Quiz from "@/components/quiz";
-import { Link } from "@/components/ui/link";
-import NextLink from "next/link";
-import { generateQuizTitle } from "./actions";
+import { questionsSchema } from "@/lib/schemas";
+import { experimental_useObject } from "ai/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { VercelIcon, GitIcon } from "@/components/icons";
+import { FileUp, Loader2, Plus } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { z } from "zod";
+import { generateQuizTitle } from "./actions";
 
-export default function ChatWithFiles() {
+export default function UploadFile() {
   const [files, setFiles] = useState<File[]>([]);
   const [questions, setQuestions] = useState<z.infer<typeof questionsSchema>>(
     [],
@@ -44,6 +41,10 @@ export default function ChatWithFiles() {
       setFiles([]);
     },
     onFinish: ({ object }) => {
+      if (object) {
+        localStorage.setItem("file", JSON.stringify(files[0]));
+        localStorage.setItem("quiz", JSON.stringify(object));
+      }
       setQuestions(object ?? []);
     },
   });
@@ -91,6 +92,7 @@ export default function ChatWithFiles() {
     );
     submit({ files: encodedFiles });
     const generatedTitle = await generateQuizTitle(encodedFiles[0].name);
+    localStorage.setItem("quiz-title", generatedTitle);
     setTitle(generatedTitle);
   };
 
@@ -157,12 +159,7 @@ export default function ChatWithFiles() {
               PDF Quiz Generator
             </CardTitle>
             <CardDescription className="text-base">
-              Upload a PDF to generate an interactive quiz based on its content
-              using the <Link href="https://sdk.vercel.ai">AI SDK</Link> and{" "}
-              <Link href="https://sdk.vercel.ai/providers/ai-sdk-providers/google-generative-ai">
-                Google&apos;s Gemini Pro
-              </Link>
-              .
+              Upload a PDF to generate interactive learning content using AI.
             </CardDescription>
           </div>
         </CardHeader>
@@ -216,9 +213,8 @@ export default function ChatWithFiles() {
             <div className="w-full space-y-2">
               <div className="grid grid-cols-6 sm:grid-cols-4 items-center space-x-2 text-sm">
                 <div
-                  className={`h-2 w-2 rounded-full ${
-                    isLoading ? "bg-yellow-500/50 animate-pulse" : "bg-muted"
-                  }`}
+                  className={`h-2 w-2 rounded-full ${isLoading ? "bg-yellow-500/50 animate-pulse" : "bg-muted"
+                    }`}
                 />
                 <span className="text-muted-foreground text-center col-span-4 sm:col-span-2">
                   {partialQuestions
@@ -230,29 +226,6 @@ export default function ChatWithFiles() {
           </CardFooter>
         )}
       </Card>
-      <motion.div
-        className="flex flex-row gap-4 items-center justify-between fixed bottom-6 text-xs "
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-      >
-        <NextLink
-          target="_blank"
-          href="https://github.com/vercel-labs/ai-sdk-preview-pdf-support"
-          className="flex flex-row gap-2 items-center border px-2 py-1.5 rounded-md hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800"
-        >
-          <GitIcon />
-          View Source Code
-        </NextLink>
-
-        <NextLink
-          target="_blank"
-          href="https://vercel.com/templates/next.js/ai-quiz-generator"
-          className="flex flex-row gap-2 items-center bg-zinc-900 px-2 py-1.5 rounded-md text-zinc-50 hover:bg-zinc-950 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-50"
-        >
-          <VercelIcon size={14} />
-          Deploy with Vercel
-        </NextLink>
-      </motion.div>
     </div>
   );
 }

@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "richie5um2.vscode-sort-json",
+        "dbaeumer.vscode-eslint",
+        "rvest.vs-code-prettier-eslint",
+        "streetsidesoftware.code-spell-checker",
+        "stylelint.vscode-stylelint",
+        "SonarSource.sonarlint-vscode"
+    ]
+}
