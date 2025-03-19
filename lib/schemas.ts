@@ -18,3 +18,12 @@ export const questionSchema = z.object({
 export type Question = z.infer<typeof questionSchema>;
 
 export const questionsSchema = z.array(questionSchema).length(4);
+
+export const flashCardSchema = z.object({
+  question: z.string(),
+  answer: z.string()
+});
+
+export type FlashCard = z.infer<typeof flashCardSchema>;
+
+export const flashCardsSchema = z.array(flashCardSchema).length(4);

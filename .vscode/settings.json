@@ -4,6 +4,7 @@
 // rvest.vs-code-prettier-eslint
 {
     "cSpell.words": [
+        "Quizlet"
     ],
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": "explicit",

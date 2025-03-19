@@ -1,15 +1,15 @@
-import "./globals.css";
 import { Metadata } from "next";
-import { Toaster } from "sonner";
 import { ThemeProvider } from "next-themes";
 import { Geist } from "next/font/google";
+import { Toaster } from "sonner";
+import "./globals.css";
 
 const geist = Geist({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://ai-sdk-preview-pdf-support.vercel.app"),
-  title: "PDF Support Preview",
-  description: "Experimental preview of PDF support with the AI SDK",
+  title: "PDF to Quiz",
+  description: "PDF to Quiz application to generate learning content from pdf file.",
 };
 
 export default function RootLayout({

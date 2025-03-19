@@ -43,8 +43,8 @@
         --secondary-foreground: 0 0% 98%;
         --muted: 240 3.7% 15.9%;
         --muted-foreground: 240 5% 64.9%;
-        --accent: 240 3.7% 15.9%;
-        --accent-foreground: 0 0% 98%;
+        --accent: 195 100% 55%;
+        --accent-foreground: 240 5.9% 10%;
         --destructive: 0 62.8% 30.6%;
         --destructive-foreground: 0 0% 98%;
         --border: 240 3.7% 15.9%;
@@ -64,5 +64,10 @@
     }
     body {
         @apply bg-background text-foreground;
+    }
+
+    .icon-size {
+        width: 4rem !important;
+        height: 4rem !important;
     }
 }

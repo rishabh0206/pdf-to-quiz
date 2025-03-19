@@ -1,36 +1,46 @@
+"use client"
+
 import QuestionCard from "@/components/question-card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Question } from "@/lib/schemas";
+import { questionsSchema } from "@/lib/schemas";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
-  FileText,
   RefreshCw
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import QuizReview from "../../../components/quiz-overview";
-import QuizScore from "../../../components/score";
+import { z } from "zod";
+import QuizReview from "../../../../components/quiz-overview";
+import QuizScore from "../../../../components/score";
 
 type QuizProps = {
-  questions: Question[];
-  clearPDF: () => void;
-  title: string;
 };
 
 export default function Quiz({
-  questions,
-  clearPDF,
-  title = "Quiz",
 }: QuizProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<string[]>(
-    Array(questions.length).fill(null),
-  );
+
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState<number | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const [questions, setQuestions] = useState<z.infer<typeof questionsSchema>>(
+    [],
+  );
+
+  const [answers, setAnswers] = useState<string[]>([]);
+
+
+  useEffect(() => {
+    const questions = localStorage.getItem("quiz")
+    const title = localStorage.getItem("quiz-title")
+    if (questions && title) {
+      setQuestions(JSON.parse(questions));
+      setAnswers(Array(questions.length).fill(null))
+    }
+  }, [])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -79,12 +89,13 @@ export default function Quiz({
 
   const currentQuestion = questions[currentQuestionIndex];
 
+  if (questions.length === 0) {
+    return <></>
+  }
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <main className="container mx-auto px-4 py-12 max-w-4xl">
-        <h1 className="text-3xl font-bold mb-8 text-center text-foreground">
-          {title}
-        </h1>
+    <div className="bg-background text-foreground">
+      <main className="container mx-auto px-4 py-4 max-w-4xl">
         <div className="relative">
           {!isSubmitted && <Progress value={progress} className="h-1 mb-8" />}
           <div className="min-h-[400px]">
@@ -146,12 +157,6 @@ export default function Quiz({
                         className="bg-muted hover:bg-muted/80 w-full"
                       >
                         <RefreshCw className="mr-2 h-4 w-4" /> Reset Quiz
-                      </Button>
-                      <Button
-                        onClick={clearPDF}
-                        className="bg-primary hover:bg-primary/90 w-full"
-                      >
-                        <FileText className="mr-2 h-4 w-4" /> Try Another PDF
                       </Button>
                     </div>
                   </div>
