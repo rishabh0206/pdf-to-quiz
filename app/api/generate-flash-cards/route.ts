@@ -1,4 +1,4 @@
-import { questionSchema, questionsSchema } from "@/lib/schemas";
+import { flashCardSchema, questionsSchema } from "@/lib/schemas";
 import { google } from "@ai-sdk/google";
 import { streamObject } from "ai";
 
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
         ],
       },
     ],
-    schema: questionSchema,
+    schema: flashCardSchema,
     output: "array",
     onFinish: ({ object }) => {
       const res = questionsSchema.safeParse(object);

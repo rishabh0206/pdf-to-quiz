@@ -58,25 +58,13 @@ export default function Quiz({
   };
 
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else {
-      handleSubmit();
-    }
+    setCurrentQuestionIndex(currentQuestionIndex + 1);
   };
 
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
-  };
-
-  const handleSubmit = () => {
-    setIsSubmitted(true);
-    const correctAnswers = questions.reduce((acc, question, index) => {
-      return acc + (question.answer === answers[index] ? 1 : 0);
-    }, 0);
-    setScore(correctAnswers);
   };
 
   const handleReset = () => {
@@ -116,7 +104,7 @@ export default function Quiz({
                       selectedAnswer={answers[currentQuestionIndex]}
                       onSelectAnswer={handleSelectAnswer}
                       isSubmitted={isSubmitted}
-                      showCorrectAnswer={false}
+                      showCorrectAnswer={answers[currentQuestionIndex] !== null}
                     />
                     <div className="flex justify-between items-center pt-4">
                       <Button
@@ -131,13 +119,10 @@ export default function Quiz({
                       </span>
                       <Button
                         onClick={handleNextQuestion}
-                        disabled={answers[currentQuestionIndex] === null}
+                        disabled={currentQuestionIndex === questions.length - 1}
                         variant="ghost"
                       >
-                        {currentQuestionIndex === questions.length - 1
-                          ? "Submit"
-                          : "Next"}{" "}
-                        <ChevronRight className="ml-2 h-4 w-4" />
+                        Next <ChevronRight className="ml-2 h-4 w-4" />
                       </Button>
                     </div>
                   </div>

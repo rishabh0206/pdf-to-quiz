@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { questionsSchema } from "@/lib/schemas";
+import { flashCardsSchema, questionsSchema } from "@/lib/schemas";
 import { experimental_useObject } from "ai/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FileUp, Loader2, Plus } from "lucide-react";
@@ -36,9 +36,27 @@ export default function FileUpload() {
     },
     onFinish: ({ object }) => {
       if (object) {
-        debugger;
-        localStorage.setItem("file", JSON.stringify(files[0]));
+        // localStorage.setItem("file", JSON.stringify(files[0]));
         localStorage.setItem("quiz", JSON.stringify(object));
+      }
+    },
+  });
+
+  const {
+    submit: submitFlashCard,
+    object: partialFlashCards,
+    isLoading: isLoadingFlashCard,
+  } = experimental_useObject({
+    api: "/api/generate-flash-cards",
+    schema: flashCardsSchema,
+    initialValue: undefined,
+    onError: (error) => {
+      toast.error("Failed to generate flash cards. Please try again.");
+      setFiles([]);
+    },
+    onFinish: ({ object }) => {
+      if (object) {
+        localStorage.setItem("flash-cards", JSON.stringify(object));
       }
     },
   });
@@ -85,6 +103,7 @@ export default function FileUpload() {
       })),
     );
     await submit({ files: encodedFiles });
+    await submitFlashCard({ files: encodedFiles });
     const generatedTitle = await generateQuizTitle(encodedFiles[0].name);
     localStorage.setItem("quiz-title", generatedTitle);
     router.push('quizlet/quiz');
@@ -181,7 +200,7 @@ export default function FileUpload() {
               className="w-full"
               disabled={files.length === 0}
             >
-              {isLoading ? (
+              {isLoading || isLoadingFlashCard ? (
                 <span className="flex items-center space-x-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   <span>Generating Quiz...</span>
@@ -192,7 +211,7 @@ export default function FileUpload() {
             </Button>
           </form>
         </CardContent>
-        {isLoading && (
+        {isLoading || isLoadingFlashCard && (
           <CardFooter className="flex flex-col space-y-4">
             <div className="w-full space-y-1">
               <div className="flex justify-between text-sm text-muted-foreground">
@@ -204,7 +223,7 @@ export default function FileUpload() {
             <div className="w-full space-y-2">
               <div className="grid grid-cols-6 sm:grid-cols-4 items-center space-x-2 text-sm">
                 <div
-                  className={`h-2 w-2 rounded-full ${isLoading ? "bg-yellow-500/50 animate-pulse" : "bg-muted"
+                  className={`h-2 w-2 rounded-full ${isLoading || isLoadingFlashCard ? "bg-yellow-500/50 animate-pulse" : "bg-muted"
                     }`}
                 />
                 <span className="text-muted-foreground text-center col-span-4 sm:col-span-2">

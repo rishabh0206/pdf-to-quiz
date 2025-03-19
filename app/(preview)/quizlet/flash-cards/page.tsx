@@ -1,18 +1,16 @@
 "use client"
 
-import QuestionCard from "@/components/question-card";
+import FlashCard from "@/components/flash-card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { flashCardsSchema } from "@/lib/schemas";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronLeft,
-  ChevronRight,
-  RefreshCw
+  ChevronRight
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import QuizReview from "../../../../components/quiz-overview";
-import QuizScore from "../../../../components/score";
 
 type QuizProps = {
 };
@@ -22,21 +20,17 @@ export default function Quiz({
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [score, setScore] = useState<number | null>(null);
   const [progress, setProgress] = useState(0);
 
-  const [flashCards, setFlashCards] = useState<z.infer<typeof flashCardSchema>>(
+  const [flashCards, setFlashCards] = useState<z.infer<typeof flashCardsSchema>>(
     [],
   );
-
-  const [answers, setAnswers] = useState<string[]>([]);
 
 
   useEffect(() => {
     const flashCards = localStorage.getItem("flash-cards")
     if (flashCards) {
       setFlashCards(JSON.parse(flashCards));
-      setAnswers(Array(flashCards.length).fill(null))
     }
   }, [])
 
@@ -47,16 +41,8 @@ export default function Quiz({
     return () => clearTimeout(timer);
   }, [currentQuestionIndex, flashCards.length]);
 
-  const handleSelectAnswer = (answer: string) => {
-    if (!isSubmitted) {
-      const newAnswers = [...answers];
-      newAnswers[currentQuestionIndex] = answer;
-      setAnswers(newAnswers);
-    }
-  };
-
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < questions.length - 1) {
+    if (currentQuestionIndex < flashCards.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
       handleSubmit();
@@ -71,18 +57,6 @@ export default function Quiz({
 
   const handleSubmit = () => {
     setIsSubmitted(true);
-    const correctAnswers = flashCards.reduce((acc, question, index) => {
-      return acc + (question.answer === answers[index] ? 1 : 0);
-    }, 0);
-    setScore(correctAnswers);
-  };
-
-  const handleReset = () => {
-    setAnswers(Array(flashCards.length).fill(null));
-    setIsSubmitted(false);
-    setScore(null);
-    setCurrentQuestionIndex(0);
-    setProgress(0);
   };
 
   const currentQuestion = flashCards[currentQuestionIndex];
@@ -108,12 +82,8 @@ export default function Quiz({
                 transition={{ duration: 0.3 }}
               >
                 <div className="space-y-8">
-                  <QuestionCard
+                  <FlashCard
                     question={currentQuestion}
-                    selectedAnswer={answers[currentQuestionIndex]}
-                    onSelectAnswer={handleSelectAnswer}
-                    isSubmitted={isSubmitted}
-                    showCorrectAnswer={false}
                   />
                   <div className="flex justify-between items-center pt-4">
                     <Button
@@ -128,13 +98,10 @@ export default function Quiz({
                     </span>
                     <Button
                       onClick={handleNextQuestion}
-                      disabled={answers[currentQuestionIndex] === null}
+                      disabled={currentQuestionIndex === flashCards.length - 1}
                       variant="ghost"
                     >
-                      {currentQuestionIndex === flashCards.length - 1
-                        ? "Submit"
-                        : "Next"}{" "}
-                      <ChevronRight className="ml-2 h-4 w-4" />
+                      Next <ChevronRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
                 </div>
